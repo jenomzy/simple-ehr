@@ -3,28 +3,55 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>UNIABJ EHR {{title}}</title>
-    <link rel="stykesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/style.css" />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
       crossorigin="anonymous"
     />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
   </head>
   <body>
-    <div class="container row">
-      <aside class="col-3 sidebar" id="sidebar">
-        <nav class="sidebar-links">
-          <button onclick="location.href='/doctor/dashboard'">Dashboard</button>
-          <button onclick="location.href='/doctor/register'">Register</button>
-          <button onclick="location.href='/doctor/patients'">Patients</button>
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <div class="container-fluid">
           <button
-            onclick="location.href='/doctor/appointments'"
-          >Appointments</button>
-          <button onclick="location.href='/logout'">Logout</button>
-        </nav>
-      </aside>
-      <div class="col-9 main-content">
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapsibleNavbar"
+            aria-controls="collapsibleNavbar"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="/doctor/dashboard">Dashboard</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/doctor/register">Register</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/doctor/patients">Patients</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/doctor/appointments">Appointments</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div class="main-content">
         <div>{{{body}}}</div>
       </div>
     </div>

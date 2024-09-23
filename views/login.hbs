@@ -1,22 +1,27 @@
-<div class="container full-height">
+<div class="container full-height mt-5">
   <div class="row align-items-center">
-    <div class="col text-center">
-      <h2>Welcome back! Sign In</h2>
+    <div class="col text-center mb-4">
+      <h2>Welcome Back! Sign In</h2>
+      <p>Select your role to continue.</p>
       <button id="togglePatient" class="btn btn-secondary">Patient Login</button>
       <button id="toggleDoctor" class="btn btn-secondary">Doctor Login</button>
     </div>
 
     <div class="col form-container">
-      <div class="card" id="patientForm">
-        <form action="/login/patient" method="post">
+      <div class="card shadow-sm" id="patientForm" style="display: block;">
+        <br />
+        <h4 class="text-center">Patient Login</h4>
+
+        <form action="/login/patient" method="post" class="p-4">
           <div class="mb-3">
-            <label for="patientId" class="form-label">ID</label>
+            <label for="patientId" class="form-label">School ID</label>
             <input
               type="text"
               name="email"
               class="form-control"
               id="patientId"
               required
+              placeholder="Enter your School ID"
             />
           </div>
           <div class="mb-3">
@@ -27,23 +32,28 @@
               class="form-control"
               id="patientPassword"
               required
+              placeholder="Enter your password"
             />
           </div>
-          <button type="submit" class="btn btn-primary">Login</button>
-          <p>New patient? <a href="/register">Register</a></p>
+          <button type="submit" class="btn btn-primary w-100">Login</button>
+          <p class="mt-3">New patient? <a href="/register">Register now</a>.</p>
         </form>
       </div>
 
-      <div class="card" id="doctorForm" style="display: none;">
-        <form action="/login/doctor" method="post">
+      <div class="card shadow-sm" id="doctorForm" style="display: none;">
+        <br />
+        <h4 class="text-center">Doctor Login</h4>
+
+        <form action="/login/doctor" method="post" class="p-4">
           <div class="mb-3">
-            <label for="doctorId" class="form-label">ID</label>
+            <label for="doctorId" class="form-label">School ID</label>
             <input
               type="text"
               name="email"
               class="form-control"
               id="doctorId"
               required
+              placeholder="Enter your School ID"
             />
           </div>
           <div class="mb-3">
@@ -54,9 +64,10 @@
               class="form-control"
               id="doctorPassword"
               required
+              placeholder="Enter your password"
             />
           </div>
-          <button type="submit" class="btn btn-primary">Login</button>
+          <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
       </div>
     </div>
@@ -70,5 +81,4 @@
   document.getElementById('toggleDoctor').addEventListener('click', function() {
   document.getElementById('patientForm').style.display = 'none';
   document.getElementById('doctorForm').style.display = 'block'; });
-
 </script>
