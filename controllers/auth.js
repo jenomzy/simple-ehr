@@ -1,5 +1,5 @@
 // Middleware to check if user is logged in
-export function isAuthenticated(req, res, next) {
+function isAuthenticated(req, res, next) {
   if (req.session.user) {
     return next();
   }
@@ -7,7 +7,7 @@ export function isAuthenticated(req, res, next) {
 }
 
 // Middleware to check if user is a doctor
-export function isDoctor(req, res, next) {
+function isDoctor(req, res, next) {
   if (req.session.user && req.session.user.role === "doctor") {
     return next();
   }
@@ -15,9 +15,11 @@ export function isDoctor(req, res, next) {
 }
 
 // Middleware to check if user is a patient
-export function isPatient(req, res, next) {
+function isPatient(req, res, next) {
   if (req.session.user && req.session.user.role === "patient") {
     return next();
   }
   res.redirect("/login");
 }
+
+module.exports = {isAuthenticated, isDoctor, isPatient }
