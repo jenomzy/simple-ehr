@@ -157,30 +157,32 @@ router.get("/doctor/dashboard", isAuthenticated, isDoctor, async (req, res) => {
     const doctorId = req.session.user.id;
 
     // Fetch doctor-specific data here
-    const doctor = await Doctor.findById(doctorId).populate({
-      path: "patients",
-      populate: {
-        path: "medicalRecords",
-        match: { doctor: doctorId }, // Only records associated with this doctor
-        options: { sort: { date: -1 }, limit: 1 }, // Get the most recent record for each patient
-      },
-    });
+    const doctor = await Doctor.findById(doctorId)
+      .populate({
+        path: "patients",
+        populate: {
+          path: "medicalRecords",
+          match: { doctor: doctorId }, // Only records associated with this doctor
+          options: { sort: { date: -1 }, limit: 1 }, // Get the most recent record for each patient
+        },
+      })
+      .lean();
 
     // Fetch appointment counts
     const approvedAppointments = await Appointment.countDocuments({
       doctor: doctorId,
       status: "accepted",
-    });
+    }).lean();
     const pendingAppointments = await Appointment.countDocuments({
       doctor: doctorId,
       status: "pending",
-    });
+    }).lean();
 
     res.render("doctor/dashboard", {
       title: "Doctor Dashboard",
       layout: "doctor",
       doctor: {
-        ...doctor._doc,
+        doctor,
         approvedAppointments,
         pendingAppointments,
       },
@@ -191,24 +193,15 @@ router.get("/doctor/dashboard", isAuthenticated, isDoctor, async (req, res) => {
   }
 });
 
-// GET - Doctor's patients page
+// GET - View All Patients for All Doctors
 router.get("/doctor/patients", isAuthenticated, isDoctor, async (req, res) => {
   try {
-    const searchQuery = req.query.search || ""; // Capture search query
-    const doctorId = req.session.user.id;
-
-    // Find patients associated with the doctor, filter by search query if provided
-    const patients = await Patient.find({
-      name: { $regex: searchQuery, $options: "i" }, // Case-insensitive search
-      email: { $regex: searchQuery, $options: "i" },
-      _id: { $in: await Doctor.findById(doctorId).select("patients") },
-    }).populate("medicalRecords");
+    const patients = await Patient.find().populate("medicalRecords").lean();
 
     res.render("doctor/patients", {
       title: "Manage Patients",
       layout: "doctor",
       patients,
-      searchQuery,
     });
   } catch (error) {
     console.log("Error fetching patients:", error);
@@ -228,12 +221,15 @@ router.get(
         .populate({
           path: "medicalRecords",
           populate: { path: "doctor", select: "name" }, // To get doctor's name for records
-        });
+        })
+        .lean();
 
       const recentAppointment = await Appointment.findOne({
         patient: req.params.id,
         doctor: req.session.user.id,
-      }).sort({ date: -1 });
+      })
+        .sort({ date: -1 })
+        .lean();
 
       res.render("doctor/patient-details", {
         title: `Patient ${patient.name}`,
@@ -312,14 +308,18 @@ router.get(
       const pendingAppointments = await Appointment.find({
         doctor: doctorId,
         status: "pending",
-      }).populate("patient");
+      })
+        .populate("patient")
+        .lean();
 
       // Fetch accepted appointments that are upcoming (date is in the future)
       const acceptedAppointments = await Appointment.find({
         doctor: doctorId,
         status: "accepted",
         date: { $gte: new Date() }, // only appointments that are still valid
-      }).populate("patient");
+      })
+        .populate("patient")
+        .lean();
 
       res.render("doctor/appointments", {
         title: "Doctor Appointments",
@@ -455,11 +455,13 @@ router.get("/patient/records", isAuthenticated, isPatient, async (req, res) => {
     const patientId = req.session.user.id;
 
     // Fetch all medical records for the patient
-    const patient = await Patient.findById(patientId).populate({
-      path: "medicalRecords",
-      options: { sort: { date: -1 } }, // Sort by most recent
-      populate: { path: "doctor", select: "name" }, // To show doctor's name
-    });
+    const patient = await Patient.findById(patientId)
+      .populate({
+        path: "medicalRecords",
+        options: { sort: { date: -1 } }, // Sort by most recent
+        populate: { path: "doctor", select: "name" }, // To show doctor's name
+      })
+      .lean();
 
     res.render("patient/records", {
       title: "Medical Records",

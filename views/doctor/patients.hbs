@@ -1,28 +1,30 @@
-<section>
-  <h1>Patients</h1>
+<section class="container mt-4">
+  <h1 class="mb-4">Patients</h1>
 
   <!-- Search Form -->
-  <form method="GET" action="/doctor/patients">
-    <input
-      type="text"
-      name="search"
-      placeholder="Search by name or email"
-      value="{{searchQuery}}"
-    />
-    <button type="submit">Search</button>
+  <form method="GET" action="/doctor/patients" class="mb-4">
+    <div class="input-group">
+      <input
+        type="text"
+        name="search"
+        class="form-control"
+        placeholder="Search by name or email"
+        value="{{searchQuery}}"
+      />
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
   </form>
 
   <!-- List of Patients -->
-  <ul>
+  <ul class="list-group">
     {{#each patients}}
-      <li>
+      <li class="list-group-item">
         <strong>Name:</strong>
-        {{this.name}}
-        <br />
+        {{this.name}}<br />
         <strong>Email:</strong>
-        {{this.email}}
-        <br />
-        <a href="/doctor/patient/{{this._id}}">View Medical Records</a>
+        {{this.email}}<br />
+        <a href="/doctor/patient/{{this._id}}" class="btn btn-link">View Medical
+          Records</a>
       </li>
     {{/each}}
   </ul>

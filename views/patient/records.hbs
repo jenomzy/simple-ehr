@@ -1,10 +1,10 @@
-<section>
-  <h1>Your Medical Records</h1>
+<section class="container mt-4">
+  <h1 class="mb-4">Your Medical Records</h1>
 
   {{#if patient.medicalRecords.length}}
-    <ul>
+    <ul class="list-group">
       {{#each patient.medicalRecords}}
-        <li>
+        <li class="list-group-item">
           <p><strong>Date:</strong> {{this.date}}</p>
           <p><strong>Doctor:</strong> {{this.doctor.name}}</p>
           <p><strong>Diagnosis:</strong> {{this.diagnosis}}</p>
@@ -13,8 +13,8 @@
       {{/each}}
     </ul>
   {{else}}
-    <p>No medical records found.</p>
+    <p class="text-muted">No medical records found.</p>
   {{/if}}
 
-  <a href="/patient/dashboard">Back to Dashboard</a>
+  <a href="/patient/dashboard" class="btn btn-secondary mt-3">Back to Dashboard</a>
 </section>

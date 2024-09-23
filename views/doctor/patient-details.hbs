@@ -1,25 +1,24 @@
-<section>
-  <h1>{{patient.name}}'s Medical Records</h1>
+<section class="container mt-4">
+  <h1 class="mb-4">{{patient.name}}'s Medical Records</h1>
 
   <!-- Display Most Recent Appointment -->
   {{#if recentAppointment}}
     <h2>Most Recent Appointment</h2>
     <p>
       <strong>Date:</strong>
-      {{recentAppointment.date}}
-      <br />
+      {{recentAppointment.date}}<br />
       <strong>Status:</strong>
       {{recentAppointment.status}}
     </p>
   {{else}}
-    <p>No recent appointments found.</p>
+    <p class="text-muted">No recent appointments found.</p>
   {{/if}}
 
   <!-- Medical Records Section -->
-  <h2>Medical Records</h2>
-  <ul>
+  <h2 class="mt-4">Medical Records</h2>
+  <ul class="list-group">
     {{#each patient.medicalRecords}}
-      <li>
+      <li class="list-group-item">
         <p><strong>Date:</strong> {{this.date}}</p>
         <p><strong>Diagnosis:</strong> {{this.diagnosis}}</p>
         <p><strong>Prescription:</strong> {{this.prescription}}</p>
@@ -28,22 +27,51 @@
         <form
           action="/doctor/patient/{{patient._id}}/record/{{this._id}}"
           method="POST"
+          class="mt-2"
         >
-          <textarea name="diagnosis">{{this.diagnosis}}</textarea>
-          <textarea name="prescription">{{this.prescription}}</textarea>
-          <button type="submit">Update Record</button>
+          <div class="mb-3">
+            <textarea
+              name="diagnosis"
+              class="form-control"
+              rows="3"
+              placeholder="Update Diagnosis"
+            >{{this.diagnosis}}</textarea>
+          </div>
+          <div class="mb-3">
+            <textarea
+              name="prescription"
+              class="form-control"
+              rows="3"
+              placeholder="Update Prescription"
+            >{{this.prescription}}</textarea>
+          </div>
+          <button type="submit" class="btn btn-warning">Update Record</button>
         </form>
       </li>
     {{/each}}
   </ul>
 
   <!-- Add New Record -->
-  <h2>Add New Medical Record</h2>
+  <h2 class="mt-4">Add New Medical Record</h2>
   <form action="/doctor/patient/{{patient._id}}/record" method="POST">
-    <label>Diagnosis:</label>
-    <textarea name="diagnosis"></textarea>
-    <label>Prescription:</label>
-    <textarea name="prescription"></textarea>
-    <button type="submit">Add Record</button>
+    <div class="mb-3">
+      <label class="form-label">Diagnosis:</label>
+      <textarea
+        name="diagnosis"
+        class="form-control"
+        rows="3"
+        placeholder="Enter Diagnosis"
+      ></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Prescription:</label>
+      <textarea
+        name="prescription"
+        class="form-control"
+        rows="3"
+        placeholder="Enter Prescription"
+      ></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Add Record</button>
   </form>
 </section>

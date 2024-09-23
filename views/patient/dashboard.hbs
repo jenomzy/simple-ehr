@@ -1,20 +1,27 @@
-<section>
-  <h1>Welcome, {{patient.name}}</h1>
+<section class="container mt-4">
+  <h1 class="mb-4">Welcome, {{patient.name}}</h1>
 
   <!-- Profile Info -->
-  <div>
-    <h2>Your Profile</h2>
-    <p><strong>Email:</strong> {{patient.email}}</p>
-    <p><strong>Role:</strong> {{patient.role}}</p>
+  <div class="row mb-4"></div>
+  <div class="col">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h5>Profile</h5>
+      </div>
+      <div class="card-body">
+        <p><strong>Name:</strong> {{patient.name}}</p>
+        <p><strong>ID:</strong> {{patient.email}}</p>
+      </div>
+    </div>
   </div>
 
   <!-- Current Appointments -->
-  <div>
+  <div class="mb-4">
     <h2>Current Appointments</h2>
     {{#if appointments.length}}
-      <ul>
+      <ul class="list-group">
         {{#each appointments}}
-          <li>
+          <li class="list-group-item">
             <p><strong>Doctor:</strong> {{this.doctor.name}}</p>
             <p><strong>Date:</strong> {{this.date}}</p>
             <p><strong>Status:</strong> {{this.status}}</p>
@@ -22,24 +29,35 @@
         {{/each}}
       </ul>
     {{else}}
-      <p>No current appointments.</p>
+      <p class="text-muted">No current appointments.</p>
     {{/if}}
   </div>
 
   <!-- Book Appointment -->
-  <div>
+  <div class="mb-4">
     <h2>Book Appointment</h2>
     <form action="/patient/appointment/new" method="POST">
-      <label>Doctor:</label>
-      <select name="doctorId" required>
-        {{#each doctors}}
-          <option value="{{this._id}}">Dr. {{this.name}}</option>
-        {{/each}}
-      </select>
+      <div class="mb-3">
+        <label for="doctorId" class="form-label">Doctor:</label>
+        <select name="doctorId" id="doctorId" class="form-select" required>
+          {{#each doctors}}
+            <option value="{{this._id}}">Dr. {{this.name}}</option>
+          {{/each}}
+        </select>
+      </div>
 
-      <label>Appointment Date:</label>
-      <input type="date" name="appointmentDate" required />
-      <button type="submit">Book Appointment</button>
+      <div class="mb-3">
+        <label for="appointmentDate" class="form-label">Appointment Date:</label>
+        <input
+          type="date"
+          name="appointmentDate"
+          id="appointmentDate"
+          class="form-control"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Book Appointment</button>
     </form>
   </div>
 
@@ -47,9 +65,9 @@
   <div>
     <h2>Your Recent Medical Records</h2>
     {{#if patient.medicalRecords.length}}
-      <ul>
+      <ul class="list-group">
         {{#each patient.medicalRecords}}
-          <li>
+          <li class="list-group-item">
             <p><strong>Date:</strong> {{this.date}}</p>
             <p><strong>Diagnosis:</strong> {{this.diagnosis}}</p>
             <p><strong>Prescription:</strong> {{this.prescription}}</p>
@@ -57,7 +75,8 @@
         {{/each}}
       </ul>
     {{else}}
-      <p>No recent medical records available.</p>
+      <p class="text-muted">No recent medical records available.</p>
     {{/if}}
   </div>
 </section>
+<br />
