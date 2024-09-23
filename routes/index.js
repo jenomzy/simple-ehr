@@ -388,23 +388,31 @@ router.get(
       const patientId = req.session.user.id;
 
       // Find the patient, their current appointments (future), and last 3 medical records
-      const patient = await Patient.findById(patientId).populate({
-        path: "medicalRecords",
-        options: { limit: 3, sort: { date: -1 } }, // Last 3 medical records
-      });
+      const patient = await Patient.findById(patientId)
+        .populate({
+          path: "medicalRecords",
+          options: { limit: 3, sort: { date: -1 } }, // Last 3 medical records
+        })
+        .lean();
 
       // Find upcoming appointments (status 'accepted' or 'rejected', and not past the appointment date)
       const appointments = await Appointment.find({
         patient: patientId,
         date: { $gte: new Date() }, // Future dates only
         status: { $in: ["accepted", "rejected"] },
-      }).populate("doctor");
+      })
+        .populate("doctor")
+        .lean();
+
+      // Fetch the list of doctors
+      const doctors = await Doctor.find().lean();
 
       res.render("patient/dashboard", {
         title: "Patient Dashboard",
         layout: "patient",
         patient,
         appointments,
+        doctors,
       });
     } catch (error) {
       console.log("Error fetching patient dashboard:", error);

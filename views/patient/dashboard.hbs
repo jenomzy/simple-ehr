@@ -32,10 +32,9 @@
     <form action="/patient/appointment/new" method="POST">
       <label>Doctor:</label>
       <select name="doctorId" required>
-        {{! Assuming you provide the list of doctors somewhere }}
-        <option value="doctor_id_1">Doctor 1</option>
-        <option value="doctor_id_2">Doctor 2</option>
-        <!-- Add more doctor options here -->
+        {{#each doctors}}
+          <option value="{{this._id}}">Dr. {{this.name}}</option>
+        {{/each}}
       </select>
 
       <label>Appointment Date:</label>

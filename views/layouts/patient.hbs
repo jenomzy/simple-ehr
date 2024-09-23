@@ -12,20 +12,23 @@
     />
   </head>
   <body>
-    <header>{{title}} <a href="/logout">Logout</a></header>
     <div class="container row">
-      <aside class="col-3">
-        <div class="top">
-          <div class="close" id="close-btn"></div>
-        </div>
-        <div class="sidebar">
-          <a href="/patient/dashboard">Dashboard</a>
-          <a href="/patient/records">Records</a>
-        </div>
+      <header class="top-nav">
+      </header>
+
+      <aside class="col-3 sidebar" id="sidebar">
+        <nav class="sidebar-links">
+          <button
+            onclick="location.href='/patient/dashboard'"
+          >Dashboard</button>
+          <button onclick="location.href='/patient/records'">Records</button>
+        </nav>
       </aside>
-      <div class="col-9">
+
+      <div class="col-9 main-content">
         <div>{{{body}}}</div>
       </div>
     </div>
+
   </body>
 </html>

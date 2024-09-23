@@ -12,23 +12,22 @@
     />
   </head>
   <body>
-    <header>{{title}} <a href="/logout">Logout</a></header>
     <div class="container row">
-      <aside class="col-3">
-        <div class="top">
-          <div class="close" id="close-btn"></div>
-        </div>
-        <div class="sidebar">
-          <a href="/doctor/dashboard">Dashboard</a>
-          <a href="/doctor/register">Register</a>
-          <a href="/doctor/patients">Patients</a>
-          <a href="/doctor/appointments">Appoinments</a>
-          <a href="/logout">Logout</a>
-        </div>
+      <aside class="col-3 sidebar" id="sidebar">
+        <nav class="sidebar-links">
+          <button onclick="location.href='/doctor/dashboard'">Dashboard</button>
+          <button onclick="location.href='/doctor/register'">Register</button>
+          <button onclick="location.href='/doctor/patients'">Patients</button>
+          <button
+            onclick="location.href='/doctor/appointments'"
+          >Appointments</button>
+          <button onclick="location.href='/logout'">Logout</button>
+        </nav>
       </aside>
-      <div class="col-9">
+      <div class="col-9 main-content">
         <div>{{{body}}}</div>
       </div>
     </div>
+
   </body>
 </html>
