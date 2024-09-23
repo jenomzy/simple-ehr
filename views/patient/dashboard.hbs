@@ -1,36 +1,64 @@
-<!-- Profile Section -->
 <section>
-  <h2>Profile</h2>
-  <p>Name: John Doe</p>
-  <p>Email: john@example.com</p>
-</section>
+  <h1>Welcome, {{patient.name}}</h1>
 
-<!-- Current Appointments -->
-<section>
-  <h2>Current Appointments</h2>
-  <ul>
-    <li>Appointment with Dr. Smith on Sep 25, 2024</li>
-  </ul>
-</section>
+  <!-- Profile Info -->
+  <div>
+    <h2>Your Profile</h2>
+    <p><strong>Email:</strong> {{patient.email}}</p>
+    <p><strong>Role:</strong> {{patient.role}}</p>
+  </div>
 
-<!-- Book New Appointment -->
-<section>
-  <h2>Book New Appointment</h2>
-  <form action="/appointment/new" method="POST">
-    <label for="doctor">Choose Doctor:</label>
-    <select id="doctor" name="doctor">
-      <option value="dr-smith">Dr. Smith</option>
-    </select>
-    <input type="date" name="appointment-date" required />
-    <button type="submit">Book Appointment</button>
-  </form>
-</section>
+  <!-- Current Appointments -->
+  <div>
+    <h2>Current Appointments</h2>
+    {{#if appointments.length}}
+      <ul>
+        {{#each appointments}}
+          <li>
+            <p><strong>Doctor:</strong> {{this.doctor.name}}</p>
+            <p><strong>Date:</strong> {{this.date}}</p>
+            <p><strong>Status:</strong> {{this.status}}</p>
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p>No current appointments.</p>
+    {{/if}}
+  </div>
 
-<!-- Last 3 Medical Records -->
-<section>
-  <h2>Recent Medical Records</h2>
-  <ul>
-    <li>Visit: Sep 10, 2024 - Diagnosis: Fever, Prescription: Paracetamol</li>
-    <!-- Repeat for other 2 records -->
-  </ul>
+  <!-- Book Appointment -->
+  <div>
+    <h2>Book Appointment</h2>
+    <form action="/patient/appointment/new" method="POST">
+      <label>Doctor:</label>
+      <select name="doctorId" required>
+        {{! Assuming you provide the list of doctors somewhere }}
+        <option value="doctor_id_1">Doctor 1</option>
+        <option value="doctor_id_2">Doctor 2</option>
+        <!-- Add more doctor options here -->
+      </select>
+
+      <label>Appointment Date:</label>
+      <input type="date" name="appointmentDate" required />
+      <button type="submit">Book Appointment</button>
+    </form>
+  </div>
+
+  <!-- Last 3 Medical Records -->
+  <div>
+    <h2>Your Recent Medical Records</h2>
+    {{#if patient.medicalRecords.length}}
+      <ul>
+        {{#each patient.medicalRecords}}
+          <li>
+            <p><strong>Date:</strong> {{this.date}}</p>
+            <p><strong>Diagnosis:</strong> {{this.diagnosis}}</p>
+            <p><strong>Prescription:</strong> {{this.prescription}}</p>
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p>No recent medical records available.</p>
+    {{/if}}
+  </div>
 </section>

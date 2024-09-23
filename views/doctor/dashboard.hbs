@@ -1,38 +1,74 @@
-<!-- Profile Section -->
-<section>
-  <h2>Profile</h2>
-  <p>Doctor Name: Dr. Smith</p>
-  <!-- Render dynamically -->
-</section>
+<div class="container mt-5">
+  <!-- Doctor Profile -->
+  <div class="row mb-4">
+    <div class="col">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h5>Profile</h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Name:</strong> {{doctor.name}}</p>
+          <p><strong>Email:</strong> {{doctor.email}}</p>
+        </div>
+      </div>
+    </div>
 
-<!-- Last 3 Patients -->
-<section>
-  <h2>Recent Patients</h2>
-  <ul>
-    <li>
-      Patient: John Doe
-      <p>Last Visit: Sep 15, 2024</p>
-      <p>Diagnosis: Fever</p>
-      <p>Prescription: Paracetamol</p>
-      <textarea placeholder="Add Notes"></textarea>
-      <button>Add Note</button>
-    </li>
-    <li>
-      Patient: John Doe
-      <p>Last Visit: Sep 15, 2024</p>
-      <p>Diagnosis: Fever</p>
-      <p>Prescription: Paracetamol</p>
-      <textarea placeholder="Add Notes"></textarea>
-      <button>Add Note</button>
-    </li>
-    <li>
-      Patient: John Doe
-      <p>Last Visit: Sep 15, 2024</p>
-      <p>Diagnosis: Fever</p>
-      <p>Prescription: Paracetamol</p>
-      <textarea placeholder="Add Notes"></textarea>
-      <button>Add Note</button>
-    </li>
-    <!-- Repeat for other 2 patients -->
-  </ul>
-</section>
+    <!-- Appointments Summary -->
+    <div class="col">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h5>Appointments Summary</h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Approved Appointments:</strong>
+            {{doctor.approvedAppointments}}</p>
+          <p><strong>Pending Appointments:</strong>
+            {{doctor.pendingAppointments}}</p>
+          <a href="/doctor/appointments" class="btn btn-primary">View
+            Appointments</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Patients Section -->
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5>Recent Patients</h5>
+        </div>
+        <div class="card-body">
+          {{#if doctor.patients.length}}
+            <ul class="list-group">
+              {{#each doctor.patients}}
+                <li class="list-group-item">
+                  <p><strong>Patient Name:</strong> {{this.name}}</p>
+                  <p><strong>Email:</strong> {{this.email}}</p>
+
+                  {{#if this.medicalRecords.length}}
+                    <p><strong>Last Diagnosis:</strong>
+                      {{this.medicalRecords.0.diagnosis}}</p>
+                    <p><strong>Last Prescription:</strong>
+                      {{this.medicalRecords.0.prescription}}</p>
+                    <p><strong>Last Visit:</strong>
+                      {{this.medicalRecords.0.date}}</p>
+                  {{else}}
+                    <p>No recent medical records found.</p>
+                  {{/if}}
+
+                  <a
+                    href="/doctor/patient/{{this._id}}"
+                    class="btn btn-secondary"
+                  >View Full Record</a>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <p>No recent patients found.</p>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

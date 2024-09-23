@@ -155,19 +155,228 @@ router.post("/register/patient", async (req, res) => {
 router.get("/doctor/dashboard", isAuthenticated, isDoctor, async (req, res) => {
   try {
     const doctorId = req.session.user.id;
-    // Fetch doctor-specific data here (e.g., patients, appointments)
-    const doctor = await Doctor.findById(doctorId).populate("patients");
+
+    // Fetch doctor-specific data here
+    const doctor = await Doctor.findById(doctorId).populate({
+      path: "patients",
+      populate: {
+        path: "medicalRecords",
+        match: { doctor: doctorId }, // Only records associated with this doctor
+        options: { sort: { date: -1 }, limit: 1 }, // Get the most recent record for each patient
+      },
+    });
+
+    // Fetch appointment counts
+    const approvedAppointments = await Appointment.countDocuments({
+      doctor: doctorId,
+      status: "accepted",
+    });
+    const pendingAppointments = await Appointment.countDocuments({
+      doctor: doctorId,
+      status: "pending",
+    });
 
     res.render("doctor/dashboard", {
       title: "Doctor Dashboard",
       layout: "doctor",
-      doctor,
+      doctor: {
+        ...doctor._doc,
+        approvedAppointments,
+        pendingAppointments,
+      },
     });
   } catch (error) {
     console.log("Error fetching doctor dashboard:", error);
     res.redirect("/");
   }
 });
+
+// GET - Doctor's patients page
+router.get("/doctor/patients", isAuthenticated, isDoctor, async (req, res) => {
+  try {
+    const searchQuery = req.query.search || ""; // Capture search query
+    const doctorId = req.session.user.id;
+
+    // Find patients associated with the doctor, filter by search query if provided
+    const patients = await Patient.find({
+      name: { $regex: searchQuery, $options: "i" }, // Case-insensitive search
+      email: { $regex: searchQuery, $options: "i" },
+      _id: { $in: await Doctor.findById(doctorId).select("patients") },
+    }).populate("medicalRecords");
+
+    res.render("doctor/patients", {
+      title: "Manage Patients",
+      layout: "doctor",
+      patients,
+      searchQuery,
+    });
+  } catch (error) {
+    console.log("Error fetching patients:", error);
+    res.redirect("/doctor/dashboard");
+  }
+});
+
+// GET - View specific patient details
+router.get(
+  "/doctor/patient/:id",
+  isAuthenticated,
+  isDoctor,
+  async (req, res) => {
+    try {
+      const patient = await Patient.findById(req.params.id)
+        .populate("medicalRecords")
+        .populate({
+          path: "medicalRecords",
+          populate: { path: "doctor", select: "name" }, // To get doctor's name for records
+        });
+
+      const recentAppointment = await Appointment.findOne({
+        patient: req.params.id,
+        doctor: req.session.user.id,
+      }).sort({ date: -1 });
+
+      res.render("doctor/patient-details", {
+        title: `Patient ${patient.name}`,
+        layout: "doctor",
+        patient,
+        recentAppointment,
+      });
+    } catch (error) {
+      console.log("Error fetching patient details:", error);
+      res.redirect("/doctor/patients");
+    }
+  }
+);
+
+// POST - Add a new medical record for a patient
+router.post(
+  "/doctor/patient/:id/record",
+  isAuthenticated,
+  isDoctor,
+  async (req, res) => {
+    try {
+      const { diagnosis, prescription } = req.body;
+
+      const newRecord = await MedicalRecord.create({
+        diagnosis,
+        prescription,
+        doctor: req.session.user.id,
+        patient: req.params.id,
+      });
+
+      await Patient.findByIdAndUpdate(req.params.id, {
+        $push: { medicalRecords: newRecord._id },
+      });
+
+      res.redirect(`/doctor/patient/${req.params.id}`);
+    } catch (error) {
+      console.log("Error adding medical record:", error);
+      res.redirect(`/doctor/patient/${req.params.id}`);
+    }
+  }
+);
+
+// POST - Update an existing medical record
+router.post(
+  "/doctor/patient/:id/record/:recordId",
+  isAuthenticated,
+  isDoctor,
+  async (req, res) => {
+    try {
+      const { diagnosis, prescription } = req.body;
+      const recordId = req.params.recordId;
+
+      await MedicalRecord.findByIdAndUpdate(recordId, {
+        diagnosis,
+        prescription,
+      });
+
+      res.redirect(`/doctor/patient/${req.params.id}`);
+    } catch (error) {
+      console.log("Error updating medical record:", error);
+      res.redirect(`/doctor/patient/${req.params.id}`);
+    }
+  }
+);
+
+// Doctor - View All Patients
+router.get(
+  "/doctor/appointments",
+  isAuthenticated,
+  isDoctor,
+  async (req, res) => {
+    try {
+      const doctorId = req.session.user.id;
+
+      // Fetch all pending appointments
+      const pendingAppointments = await Appointment.find({
+        doctor: doctorId,
+        status: "pending",
+      }).populate("patient");
+
+      // Fetch accepted appointments that are upcoming (date is in the future)
+      const acceptedAppointments = await Appointment.find({
+        doctor: doctorId,
+        status: "accepted",
+        date: { $gte: new Date() }, // only appointments that are still valid
+      }).populate("patient");
+
+      res.render("doctor/appointments", {
+        title: "Doctor Appointments",
+        layout: "doctor",
+        pendingAppointments,
+        acceptedAppointments,
+      });
+    } catch (error) {
+      console.log("Error fetching appointments:", error);
+      res.redirect("/doctor/dashboard");
+    }
+  }
+);
+
+// Approve Appointment
+router.post(
+  "/doctor/appointments/:id/approve",
+  isAuthenticated,
+  isDoctor,
+  async (req, res) => {
+    try {
+      const appointmentId = req.params.id;
+
+      // Update the status of the appointment to "accepted"
+      await Appointment.findByIdAndUpdate(appointmentId, {
+        status: "accepted",
+      });
+
+      res.redirect("/doctor/appointments");
+    } catch (error) {
+      console.log("Error approving appointment:", error);
+      res.redirect("/doctor/appointments");
+    }
+  }
+);
+
+// Reject Appointment
+router.post(
+  "/doctor/appointments/:id/reject",
+  isAuthenticated,
+  isDoctor,
+  async (req, res) => {
+    try {
+      const appointmentId = req.params.id;
+
+      // Update the status of the appointment to "rejected"
+      await Appointment.findByIdAndUpdate(appointmentId, {
+        status: "rejected",
+      });
+
+      res.redirect("/doctor/appointments");
+    } catch (error) {
+      console.log("Error rejecting appointment:", error);
+      res.redirect("/doctor/appointments");
+    }
+  }
+);
 
 // Patient Dashboard Route
 router.get(
@@ -177,15 +386,25 @@ router.get(
   async (req, res) => {
     try {
       const patientId = req.session.user.id;
-      // Fetch patient-specific data here (e.g., medical records, appointments)
-      const patient = await Patient.findById(patientId).populate(
-        "medicalRecords"
-      );
+
+      // Find the patient, their current appointments (future), and last 3 medical records
+      const patient = await Patient.findById(patientId).populate({
+        path: "medicalRecords",
+        options: { limit: 3, sort: { date: -1 } }, // Last 3 medical records
+      });
+
+      // Find upcoming appointments (status 'accepted' or 'rejected', and not past the appointment date)
+      const appointments = await Appointment.find({
+        patient: patientId,
+        date: { $gte: new Date() }, // Future dates only
+        status: { $in: ["accepted", "rejected"] },
+      }).populate("doctor");
 
       res.render("patient/dashboard", {
         title: "Patient Dashboard",
         layout: "patient",
         patient,
+        appointments,
       });
     } catch (error) {
       console.log("Error fetching patient dashboard:", error);
@@ -193,115 +412,6 @@ router.get(
     }
   }
 );
-
-// Doctor - View All Patients
-router.get("/doctor/patients", isAuthenticated, isDoctor, async (req, res) => {
-  try {
-    const doctor = await Doctor.findById(req.session.user.id).populate(
-      "patients"
-    );
-    res.render("doctor/patients", {
-      title: "Patients",
-      layout: "doctor",
-      patients: doctor.patients,
-    });
-  } catch (error) {
-    console.log("Error fetching patients:", error);
-    res.redirect("/doctor/dashboard");
-  }
-});
-
-// Doctor - View All Patients
-router.get(
-  "/doctor/appointments",
-  isAuthenticated,
-  isDoctor,
-  async (req, res) => {
-    try {
-      const doctor = await Doctor.findById(req.session.user.id).populate(
-        "patients"
-      );
-      res.render("doctor/patients", {
-        title: "Appoinments",
-        layout: "doctor",
-        patients: doctor.patients,
-      });
-    } catch (error) {
-      console.log("Error fetching patients:", error);
-      res.redirect("/doctor/dashboard");
-    }
-  }
-);
-
-// Doctor - View Specific Patient Medical Records
-router.get(
-  "/doctor/patients/:id",
-  isAuthenticated,
-  isDoctor,
-  async (req, res) => {
-    try {
-      const patient = await Patient.findById(req.params.id).populate(
-        "medicalRecords"
-      );
-      res.render("doctor/patient-record", {
-        title: "Patient Data",
-        layout: "doctor",
-        patient,
-      });
-    } catch (error) {
-      console.log("Error fetching patient records:", error);
-      res.redirect("/doctor/patients");
-    }
-  }
-);
-
-// Doctor - Add Medical Record (POST request)
-router.post(
-  "/doctor/patients/:id/record",
-  isAuthenticated,
-  isDoctor,
-  async (req, res) => {
-    try {
-      const { diagnosis, prescription } = req.body;
-      const newRecord = new MedicalRecord({
-        diagnosis,
-        prescription,
-        doctor: req.session.user.id,
-        patient: req.params.id,
-      });
-
-      await newRecord.save();
-
-      // Update patient with new record
-      const patient = await Patient.findById(req.params.id);
-      patient.medicalRecords.push(newRecord);
-      await patient.save();
-
-      res.redirect(`/doctor/patients/${req.params.id}`);
-    } catch (error) {
-      console.log("Error adding medical record:", error);
-      res.redirect(`/doctor/patients/${req.params.id}`);
-    }
-  }
-);
-
-// Patient - View All Medical Records
-router.get("/patient/records", isAuthenticated, isPatient, async (req, res) => {
-  try {
-    const patientId = req.session.user.id;
-    const patient = await Patient.findById(patientId).populate(
-      "medicalRecords"
-    );
-    res.render("patient/records", {
-      title: "Patient Records",
-      layout: "patient",
-      medicalRecords: patient.medicalRecords,
-    });
-  } catch (error) {
-    console.log("Error fetching records:", error);
-    res.redirect("/patient/dashboard");
-  }
-});
 
 // Patient - Book Appointment (POST request)
 router.post(
@@ -311,19 +421,47 @@ router.post(
   async (req, res) => {
     try {
       const { doctorId, appointmentDate } = req.body;
+
+      // Create a new appointment object
       const newAppointment = new Appointment({
         doctor: doctorId,
         patient: req.session.user.id,
-        date: new Date(appointmentDate),
+        date: new Date(appointmentDate), // Converts the input to a Date object
       });
 
+      // Save the new appointment
       await newAppointment.save();
+
+      // Redirect back to the patient's dashboard after booking
       res.redirect("/patient/dashboard");
     } catch (error) {
       console.log("Error booking appointment:", error);
-      res.redirect("/patient/appointment");
+      res.redirect("/patient/dashboard"); // Redirect to dashboard in case of error
     }
   }
 );
+
+// Patient Medical Records Route
+router.get("/patient/records", isAuthenticated, isPatient, async (req, res) => {
+  try {
+    const patientId = req.session.user.id;
+
+    // Fetch all medical records for the patient
+    const patient = await Patient.findById(patientId).populate({
+      path: "medicalRecords",
+      options: { sort: { date: -1 } }, // Sort by most recent
+      populate: { path: "doctor", select: "name" }, // To show doctor's name
+    });
+
+    res.render("patient/records", {
+      title: "Medical Records",
+      layout: "patient",
+      patient,
+    });
+  } catch (error) {
+    console.log("Error fetching medical records:", error);
+    res.redirect("/patient/dashboard");
+  }
+});
 
 module.exports = router;

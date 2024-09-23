@@ -1,12 +1,29 @@
-<!-- All Patients -->
 <section>
+  <h1>Patients</h1>
+
+  <!-- Search Form -->
+  <form method="GET" action="/doctor/patients">
+    <input
+      type="text"
+      name="search"
+      placeholder="Search by name or email"
+      value="{{searchQuery}}"
+    />
+    <button type="submit">Search</button>
+  </form>
+
+  <!-- List of Patients -->
   <ul>
-    <li>
-      <a href="/patients/123">John Doe</a>
-      <!-- Patient profile link -->
-    </li>
-    <li>
-      <a href="/patients/456">Jane Doe</a>
-    </li>
+    {{#each patients}}
+      <li>
+        <strong>Name:</strong>
+        {{this.name}}
+        <br />
+        <strong>Email:</strong>
+        {{this.email}}
+        <br />
+        <a href="/doctor/patient/{{this._id}}">View Medical Records</a>
+      </li>
+    {{/each}}
   </ul>
 </section>

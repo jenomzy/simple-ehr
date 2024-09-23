@@ -17,10 +17,24 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
 
-// Handlebars middleware
-app.engine(".hbs", engine({ extname: ".hbs" }));
-app.set("view engine", ".hbs");
+// Set up Handlebars
+app.engine("hbs", engine({ extname: ".hbs" }));
+app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
+
+// Register a helper
+app.engine(
+  "hbs",
+  engine({
+    extname: ".hbs",
+    helpers: {
+      formatDate: function (date) {
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        return new Date(date).toLocaleDateString(undefined, options);
+      },
+    },
+  })
+);
 
 //Body Parser middleware
 app.use(express.urlencoded({ extended: false }));

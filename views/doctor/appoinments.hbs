@@ -1,19 +1,71 @@
-<!-- Appointment Requests -->
-<section>
-  <h2>Appointment Requests</h2>
-  <ul>
-    <li>
-      John Doe, Sep 25, 2024
-      <button>Approve</button>
-      <button>Reject</button>
-    </li>
-  </ul>
-</section>
+<div class="container mt-5">
+  <!-- Pending Appointments Section -->
+  <div class="row mb-4">
+    <div class="col">
+      <div class="card">
+        <div class="card-header bg-warning text-white">
+          <h5>Pending Appointments</h5>
+        </div>
+        <div class="card-body">
+          {{#if pendingAppointments.length}}
+            <ul class="list-group">
+              {{#each pendingAppointments}}
+                <li class="list-group-item">
+                  <p><strong>Patient:</strong> {{this.patient.name}}</p>
+                  <p><strong>Appointment Date:</strong>
+                    {{formatDate this.date}}</p>
+                  <p><strong>Status:</strong> {{this.status}}</p>
 
-<!-- Upcoming Appointments -->
-<section>
-  <h2>Upcoming Appointments</h2>
-  <ul>
-    <li>Jane Doe, Oct 2, 2024</li>
-  </ul>
-</section>
+                  <!-- Buttons to Approve/Reject -->
+                  <form
+                    method="POST"
+                    action="/doctor/appointments/{{this._id}}/approve"
+                    class="d-inline"
+                  >
+                    <button class="btn btn-success">Approve</button>
+                  </form>
+                  <form
+                    method="POST"
+                    action="/doctor/appointments/{{this._id}}/reject"
+                    class="d-inline"
+                  >
+                    <button class="btn btn-danger">Reject</button>
+                  </form>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <p>No pending appointments.</p>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accepted Upcoming Appointments Section -->
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h5>Upcoming Accepted Appointments</h5>
+        </div>
+        <div class="card-body">
+          {{#if acceptedAppointments.length}}
+            <ul class="list-group">
+              {{#each acceptedAppointments}}
+                <li class="list-group-item">
+                  <p><strong>Patient:</strong> {{this.patient.name}}</p>
+                  <p><strong>Appointment Date:</strong>
+                    {{formatDate this.date}}</p>
+                  <p><strong>Status:</strong> {{this.status}}</p>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <p>No upcoming appointments.</p>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

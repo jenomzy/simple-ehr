@@ -1,0 +1,49 @@
+<section>
+  <h1>{{patient.name}}'s Medical Records</h1>
+
+  <!-- Display Most Recent Appointment -->
+  {{#if recentAppointment}}
+    <h2>Most Recent Appointment</h2>
+    <p>
+      <strong>Date:</strong>
+      {{recentAppointment.date}}
+      <br />
+      <strong>Status:</strong>
+      {{recentAppointment.status}}
+    </p>
+  {{else}}
+    <p>No recent appointments found.</p>
+  {{/if}}
+
+  <!-- Medical Records Section -->
+  <h2>Medical Records</h2>
+  <ul>
+    {{#each patient.medicalRecords}}
+      <li>
+        <p><strong>Date:</strong> {{this.date}}</p>
+        <p><strong>Diagnosis:</strong> {{this.diagnosis}}</p>
+        <p><strong>Prescription:</strong> {{this.prescription}}</p>
+
+        <!-- Update Form -->
+        <form
+          action="/doctor/patient/{{patient._id}}/record/{{this._id}}"
+          method="POST"
+        >
+          <textarea name="diagnosis">{{this.diagnosis}}</textarea>
+          <textarea name="prescription">{{this.prescription}}</textarea>
+          <button type="submit">Update Record</button>
+        </form>
+      </li>
+    {{/each}}
+  </ul>
+
+  <!-- Add New Record -->
+  <h2>Add New Medical Record</h2>
+  <form action="/doctor/patient/{{patient._id}}/record" method="POST">
+    <label>Diagnosis:</label>
+    <textarea name="diagnosis"></textarea>
+    <label>Prescription:</label>
+    <textarea name="prescription"></textarea>
+    <button type="submit">Add Record</button>
+  </form>
+</section>
