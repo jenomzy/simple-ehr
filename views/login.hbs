@@ -1,0 +1,74 @@
+<div class="container full-height">
+  <div class="row align-items-center">
+    <div class="col text-center">
+      <h2>Welcome back! Sign In</h2>
+      <button id="togglePatient" class="btn btn-secondary">Patient Login</button>
+      <button id="toggleDoctor" class="btn btn-secondary">Doctor Login</button>
+    </div>
+
+    <div class="col form-container">
+      <div class="card" id="patientForm">
+        <form action="/login/patient" method="post">
+          <div class="mb-3">
+            <label for="patientId" class="form-label">ID</label>
+            <input
+              type="text"
+              name="email"
+              class="form-control"
+              id="patientId"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="patientPassword" class="form-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              id="patientPassword"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+          <p>New patient? <a href="/register">Register</a></p>
+        </form>
+      </div>
+
+      <div class="card" id="doctorForm" style="display: none;">
+        <form action="/login/doctor" method="post">
+          <div class="mb-3">
+            <label for="doctorId" class="form-label">ID</label>
+            <input
+              type="text"
+              name="email"
+              class="form-control"
+              id="doctorId"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="doctorPassword" class="form-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              id="doctorPassword"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('togglePatient').addEventListener('click', function()
+  { document.getElementById('patientForm').style.display = 'block';
+  document.getElementById('doctorForm').style.display = 'none'; });
+  document.getElementById('toggleDoctor').addEventListener('click', function() {
+  document.getElementById('patientForm').style.display = 'none';
+  document.getElementById('doctorForm').style.display = 'block'; });
+
+</script>

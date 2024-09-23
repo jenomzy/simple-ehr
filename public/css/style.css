@@ -1,0 +1,37 @@
+* {
+    padding: 0;
+    margin: 0;
+    outline: 0;
+    appearance: none;
+    border: 0;
+    text-decoration: none;
+    list-style: none;
+}
+
+html {
+    font-size: 40px;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    font-size: 0.88rem;
+}
+
+.full-height {
+    min-height: 100vh; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-container {
+    margin-top: 20px;
+  }
+  
+.card {
+    padding: 20px;
+}
+  

@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="row align-items-center">
+    <div class="col">Create an Account</div>
+    <div class="col">
+      <form action="/register/patient" method="post">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input
+            type="text"
+            name="name"
+            class="form-control"
+            id="name"
+            placeholder="Name"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">School ID</label>
+          <input
+            type="text"
+            name="email"
+            class="form-control"
+            id="email"
+            placeholder="School ID"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            name="password"
+            class="form-control"
+            id="password"
+            placeholder="Password"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="password2" class="form-label">Confirm Password</label>
+          <input
+            type="password"
+            name="password2"
+            class="form-control"
+            id="password2"
+            placeholder="Confirm Password"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+      </form>
+      <p>Already have an account?<a href="/login">Login</a></p>
+    </div>
+  </div>
+</div>
