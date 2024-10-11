@@ -32,7 +32,7 @@ router.post("/login/doctor", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const doctor = await Doctor.findOne({ email : { $regex: new RegExp(`^${email}$`, 'i') } });
+    const doctor = await Doctor.findOne({ email : email.toUpperCase() });
     if (!doctor) {
       return res.redirect("/login"); // Doctor not found
     }
@@ -57,7 +57,7 @@ router.post("/login/patient", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const patient = await Patient.findOne({ email : { $regex: new RegExp(`^${email}$`, 'i') } });
+    const patient = await Patient.findOne({ email : email.toUpperCase() });
     if (!patient) {
       return res.redirect("/login");
     }
