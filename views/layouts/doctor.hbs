@@ -35,14 +35,16 @@
                 <a class="nav-link" href="/doctor/dashboard">Dashboard</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/doctor/register">Register</a>
-              </li>
-              <li class="nav-item">
                 <a class="nav-link" href="/doctor/patients">Patients</a>
               </li>
-              <li class="nav-item">
+              {{#if (eq doctor.doctor.designation "consultant")}}
+              <li class="nav-item"></li>
                 <a class="nav-link" href="/doctor/appointments">Appointments</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/doctor/register">Register Doc</a>
+              </li>
+              {{/if}}
               <li class="nav-item">
                 <a class="nav-link" href="/logout">Logout</a>
               </li>

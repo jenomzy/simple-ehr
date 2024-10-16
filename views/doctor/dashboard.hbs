@@ -14,21 +14,23 @@
     </div>
 
     <!-- Appointments Summary -->
-    <div class="col">
-      <div class="card">
-        <div class="card-header bg-success text-white">
-          <h5>Appointments Summary</h5>
-        </div>
-        <div class="card-body">
-          <p><strong>Approved Appointments:</strong>
-            {{doctor.approvedAppointments}}</p>
-          <p><strong>Pending Appointments:</strong>
-            {{doctor.pendingAppointments}}</p>
-          <a href="/doctor/appointments" class="btn btn-primary">View
-            Appointments</a>
+    {{#if (eq doctor.doctor.designation "consultant")}}
+      <div class="col">
+        <div class="card">
+          <div class="card-header bg-success text-white">
+            <h5>Appointments Summary</h5>
+          </div>
+          <div class="card-body">
+            <p><strong>Approved Appointments:</strong>
+              {{doctor.approvedAppointments}}</p>
+            <p><strong>Pending Appointments:</strong>
+              {{doctor.pendingAppointments}}</p>
+            <a href="/doctor/appointments" class="btn btn-primary">View
+              Appointments</a>
+          </div>
         </div>
       </div>
-    </div>
+    {{/if}}
   </div>
 
   <!-- Recent Patients Section -->
