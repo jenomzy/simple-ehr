@@ -5,14 +5,12 @@
       <form action="/register/doctor" method="post">
         <div class="mb-3"></div>
           <label for="designation" class="form-label">Designation</label>
-          <input
-            type="text"
-            name="designation"
-            class="form-control"
-            id="designation"
-            placeholder="Designation"
-            required
-          />
+          <select name="designation" id="designation" class="form-control">
+            <option value="consultant">Consultant</option>
+            <option value="lab">Lab</option>
+            <option value="pharmacist">Pharmacist</option>
+            <option value="radiologist">Radiologist</option>
+          </select>
         </div>
         <div class="mb-3">
           <label for="name" class="form-label">Name</label>

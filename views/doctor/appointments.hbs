@@ -43,7 +43,7 @@
   </div>
 
   <!-- Accepted Upcoming Appointments Section -->
-  <div class="row">
+  <div class="row mb-4">
     <div class="col">
       <div class="card">
         <div class="card-header bg-success text-white">
@@ -63,6 +63,33 @@
             </ul>
           {{else}}
             <p>No upcoming appointments.</p>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rejected Appointments Section -->
+  <div class="row mb-4">
+    <div class="col">
+      <div class="card">
+        <div class="card-header bg-danger text-white">
+          <h5>Upcoming Accepted Appointments</h5>
+        </div>
+        <div class="card-body">
+          {{#if rejectedAppointments.length}}
+            <ul class="list-group">
+              {{#each rejectedAppointments}}
+                <li class="list-group-item">
+                  <p><strong>Patient:</strong> {{this.patient.name}}</p>
+                  <p><strong>Appointment Date:</strong>
+                    {{formatDate this.date}}</p>
+                  <p><strong>Status:</strong> {{this.status}}</p>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <p>No rejected appointments.</p>
           {{/if}}
         </div>
       </div>
