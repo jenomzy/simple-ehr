@@ -9,6 +9,30 @@
         <div class="card-body">
           <p><strong>Name:</strong> {{doctor.doctor.name}}</p>
           <p><strong>ID:</strong> {{doctor.doctor.email}}</p>
+          <p><strong>Designation:</strong> {{doctor.doctor.designation}}</p>
+        </div>
+      </div><hr>
+      <div class="card"></div>
+        <div class="card-header bg-primary text-white">
+          <h5>Features of {{doctor.doctor.designation}} doctor</h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Dashboard Access</strong></p>
+          <p><strong>Patient List Access</strong></p>
+          <p><strong>Individual Patient Details Access</strong></p>
+          {{#if (eq doctor.doctor.designation "lab")}}
+          <p><strong>Add Lab Info to Patient Details</strong></p>
+          {{/if}}
+          {{#if (eq doctor.doctor.designation "radiologist")}}
+          <p><strong>Add Radio Scan Info to Patient Details</strong></p>
+          {{/if}}
+          {{#if (eq doctor.doctor.designation "pharmacist")}}
+          <p><strong>Mark Prescription as Dispensed to Patient Details</strong></p>
+          {{/if}}
+          {{#if (eq doctor.doctor.designation "consultant")}}
+          <p><strong>Register a new Doctor</strong></p>
+          <p><strong>View Appointments</strong></p>
+          {{/if}}
         </div>
       </div>
     </div>
@@ -30,10 +54,8 @@
           </div>
         </div>
       </div>
-    {{/if}}
-  </div>
 
-  <!-- Recent Patients Section -->
+       <!-- Recent Patients Section -->
   <div class="row">
     <div class="col">
       <div class="card">
@@ -74,3 +96,7 @@
     </div>
   </div>
 </div>
+    {{/if}}
+  </div>
+
+ 

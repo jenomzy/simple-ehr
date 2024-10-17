@@ -10,30 +10,21 @@
     <div class="col-12 col-md-6 form-container">
       <div class="card shadow-sm" id="patientForm" style="display: block;">
         <br />
-        <h4 class="text-center">Patient Login</h4>
+        <h4 class="text-center">Patient Login<button type="button" class="btn btn-default btn-sm"
+            data-bs-toggle="tooltip" data-bs-placement="right" title="Sample Patient: ID: UA1111 Password: 12345">
+            ?
+          </button></h4>
 
         <form action="/login/patient" method="post" class="p-4">
           <div class="mb-3">
             <label for="patientId" class="form-label">School ID</label>
-            <input
-              type="text"
-              name="email"
-              class="form-control"
-              id="patientId"
-              required
-              placeholder="Enter your School ID"
-            />
+            <input type="text" name="email" class="form-control" id="patientId" required
+              placeholder="Enter your School ID" />
           </div>
           <div class="mb-3">
             <label for="patientPassword" class="form-label">Password</label>
-            <input
-              type="password"
-              name="password"
-              class="form-control"
-              id="patientPassword"
-              required
-              placeholder="Enter your password"
-            />
+            <input type="password" name="password" class="form-control" id="patientPassword" required
+              placeholder="Enter your password" />
           </div>
           <button type="submit" class="btn btn-primary w-100">Login</button>
           <p class="mt-3">New patient? <a href="/register">Register now</a>.</p>
@@ -42,30 +33,25 @@
 
       <div class="card shadow-sm" id="doctorForm" style="display: none;">
         <br />
-        <h4 class="text-center">Doctor Login</h4>
+        <h4 class="text-center">Doctor Login<button type="button" class="btn btn-default btn-sm"
+            data-bs-toggle="tooltip" data-bs-placement="right" title="Consultant: ID: UA1213 Password: 12345 
+          Lab: ID: UA1210 Password: 12345
+          Radiologist: ID: UA1211 Password: 12345
+          Pharmacist: ID: UA1212 Password: 12345">
+            ?
+          </button></h4>
+
 
         <form action="/login/doctor" method="post" class="p-4">
           <div class="mb-3">
             <label for="doctorId" class="form-label">School ID</label>
-            <input
-              type="text"
-              name="email"
-              class="form-control"
-              id="doctorId"
-              required
-              placeholder="Enter your School ID"
-            />
+            <input type="text" name="email" class="form-control" id="doctorId" required
+              placeholder="Enter your School ID" />
           </div>
           <div class="mb-3">
             <label for="doctorPassword" class="form-label">Password</label>
-            <input
-              type="password"
-              name="password"
-              class="form-control"
-              id="doctorPassword"
-              required
-              placeholder="Enter your password"
-            />
+            <input type="password" name="password" class="form-control" id="doctorPassword" required
+              placeholder="Enter your password" />
           </div>
           <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
@@ -75,10 +61,19 @@
 </div>
 
 <script>
-  document.getElementById('togglePatient').addEventListener('click', function()
-  { document.getElementById('patientForm').style.display = 'block';
-  document.getElementById('doctorForm').style.display = 'none'; });
-  document.getElementById('toggleDoctor').addEventListener('click', function() {
-  document.getElementById('patientForm').style.display = 'none';
-  document.getElementById('doctorForm').style.display = 'block'; });
+  document.getElementById('togglePatient').addEventListener('click', function () {
+    document.getElementById('patientForm').style.display = 'block';
+    document.getElementById('doctorForm').style.display = 'none';
+  });
+  document.getElementById('toggleDoctor').addEventListener('click', function () {
+    document.getElementById('patientForm').style.display = 'none';
+    document.getElementById('doctorForm').style.display = 'block';
+  });
+
+  var tooltipTriggerList =
+    [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new
+      bootstrap.Tooltip(tooltipTriggerEl)
+  })
 </script>
