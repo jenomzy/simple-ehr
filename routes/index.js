@@ -32,7 +32,7 @@ router.post("/login/doctor", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const doctor = await Doctor.findOne({ email });
+    const doctor = await Doctor.findOne({ email: email.toUpperCase() });
     if (!doctor) {
       return res.redirect("/login"); // Doctor not found
     }
@@ -44,7 +44,11 @@ router.post("/login/doctor", async (req, res) => {
     }
 
     // Set user in session
-    req.session.user = { id: doctor._id, role: "doctor" };
+    req.session.user = {
+      id: doctor._id,
+      role: "doctor",
+      designation: doctor.designation,
+    };
     res.redirect("/doctor/dashboard");
   } catch (err) {
     console.log("Error logging in doctor:", err);
@@ -57,7 +61,7 @@ router.post("/login/patient", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const patient = await Patient.findOne({ email });
+    const patient = await Patient.findOne({ email: email.toUpperCase() });
     if (!patient) {
       return res.redirect("/login");
     }
@@ -99,11 +103,11 @@ router.get("/doctor/register", isAuthenticated, isDoctor, (req, res) => {
 
 // Doctor Registration
 router.post("/register/doctor", isAuthenticated, isDoctor, async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, designation } = req.body;
 
   try {
     // Check if doctor already exists
-    let doctor = await Doctor.findOne({ email });
+    let doctor = await Doctor.findOne({ email: email.toUpperCase() });
     if (doctor) {
       return res.redirect("/doctor/register"); // User already exists
     }
@@ -113,7 +117,12 @@ router.post("/register/doctor", isAuthenticated, isDoctor, async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create new doctor
-    doctor = new Doctor({ name, email, password: hashedPassword });
+    doctor = new Doctor({
+      name,
+      email: email.toUpperCase(),
+      password: hashedPassword,
+      designation,
+    });
     await doctor.save();
 
     res.redirect("/doctor/dashboard");
@@ -129,7 +138,7 @@ router.post("/register/patient", async (req, res) => {
 
   try {
     // Check if patient already exists
-    let patient = await Patient.findOne({ email });
+    let patient = await Patient.findOne({ email: email.toUpperCase() });
     if (patient) {
       return res.redirect("/register"); // User already exists
     }
@@ -141,7 +150,11 @@ router.post("/register/patient", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create new patient
-    patient = new Patient({ name, email, password: hashedPassword });
+    patient = new Patient({
+      name,
+      email: email.toUpperCase(),
+      password: hashedPassword,
+    });
     await patient.save();
 
     res.redirect("/login");
@@ -216,6 +229,10 @@ router.get(
   isDoctor,
   async (req, res) => {
     try {
+      const doctorId = req.session.user.id;
+
+      const doctor = await Doctor.findById(doctorId).lean();
+
       const patient = await Patient.findById(req.params.id)
         .populate("medicalRecords")
         .populate({
@@ -235,6 +252,7 @@ router.get(
         title: `Patient ${patient.name}`,
         layout: "doctor",
         patient,
+        doctor,
         recentAppointment,
       });
     } catch (error) {
@@ -272,6 +290,72 @@ router.post(
   }
 );
 
+// POST - Add a new lab record for a patient
+router.post(
+  "/doctor/patient/:id/lab/:recordId",
+  isAuthenticated,
+  isDoctor,
+  async (req, res) => {
+    try {
+      const { lab } = req.body;
+      const recordId = req.params.recordId;
+
+      await MedicalRecord.findByIdAndUpdate(recordId, {
+        lab,
+      });
+
+      res.redirect(`/doctor/patient/${req.params.id}`);
+    } catch (error) {
+      console.log("Error adding medical record:", error);
+      res.redirect(`/doctor/patient/${req.params.id}`);
+    }
+  }
+);
+
+// POST - Add a new radio record for a patient
+router.post(
+  "/doctor/patient/:id/radio/:recordId",
+  isAuthenticated,
+  isDoctor,
+  async (req, res) => {
+    try {
+      const { radio } = req.body;
+
+      const recordId = req.params.recordId;
+
+      await MedicalRecord.findByIdAndUpdate(recordId, {
+        radio,
+      });
+
+      res.redirect(`/doctor/patient/${req.params.id}`);
+    } catch (error) {
+      console.log("Error adding medical record:", error);
+      res.redirect(`/doctor/patient/${req.params.id}`);
+    }
+  }
+);
+
+// POST - Add a new pharm record for a patient
+router.post(
+  "/doctor/patient/:id/pharm/:recordId",
+  isAuthenticated,
+  isDoctor,
+  async (req, res) => {
+    try {
+      const recordId = req.params.recordId;
+
+      await MedicalRecord.findByIdAndUpdate(recordId, {
+        pharm: "yes",
+      });
+
+      res.redirect(`/doctor/patient/${req.params.id}`);
+    } catch (error) {
+      console.log("Error adding medical record:", error);
+      res.redirect(`/doctor/patient/${req.params.id}`);
+    }
+  }
+);
+
 // POST - Update an existing medical record
 router.post(
   "/doctor/patient/:id/record/:recordId",
@@ -295,7 +379,7 @@ router.post(
   }
 );
 
-// Doctor - View All Patients
+// Doctor - View All Patients Appointments
 router.get(
   "/doctor/appointments",
   isAuthenticated,
@@ -316,7 +400,16 @@ router.get(
       const acceptedAppointments = await Appointment.find({
         doctor: doctorId,
         status: "accepted",
-        date: { $gte: new Date() }, // only appointments that are still valid
+        //date: { $gte: new Date() }, // only appointments that are still valid
+      })
+        .populate("patient")
+        .lean();
+
+      // Fetch rejected appointments
+      const rejectedAppointments = await Appointment.find({
+        doctor: doctorId,
+        status: "rejected",
+        //date: { $gte: new Date() }, // only appointments that are still valid
       })
         .populate("patient")
         .lean();
@@ -326,6 +419,7 @@ router.get(
         layout: "doctor",
         pendingAppointments,
         acceptedAppointments,
+        rejectedAppointments,
       });
     } catch (error) {
       console.log("Error fetching appointments:", error);
@@ -405,7 +499,7 @@ router.get(
         .lean();
 
       // Fetch the list of doctors
-      const doctors = await Doctor.find().lean();
+      const doctors = await Doctor.find({ designation: "consultant" }).lean();
 
       res.render("patient/dashboard", {
         title: "Patient Dashboard",
